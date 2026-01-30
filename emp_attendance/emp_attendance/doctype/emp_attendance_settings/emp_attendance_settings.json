@@ -1,0 +1,83 @@
+{
+  "doctype": "DocType",
+  "name": "Emp Attendance Settings",
+  "module": "Emp Attendance",
+  "custom": 0,
+  "is_submittable": 0,
+  "issingle": 1,
+  "autoname": "field:company_name",
+  "editable_grid": 1,
+  "track_changes": 1,
+  "fields": [
+    {
+      "fieldname": "company_name",
+      "fieldtype": "Data",
+      "label": "Company Name",
+      "reqd": 1
+    },
+    {
+      "fieldname": "company_logo",
+      "fieldtype": "Attach Image",
+      "label": "Company Logo"
+    },
+    {
+      "fieldname": "primary_color",
+      "fieldtype": "Data",
+      "label": "Primary Color (HEX)",
+      "default": "#2563eb"
+    },
+    {
+      "fieldname": "topbar_bg",
+      "fieldtype": "Data",
+      "label": "Topbar Background (HEX)",
+      "default": "#1f2a44"
+    },
+    {
+      "fieldname": "page_bg",
+      "fieldtype": "Data",
+      "label": "Page Background (HEX)",
+      "default": "#0b1220"
+    },
+    {
+      "fieldname": "card_bg",
+      "fieldtype": "Data",
+      "label": "Card Background (HEX)",
+      "default": "#0f172a"
+    },
+    {
+      "fieldname": "text_color",
+      "fieldtype": "Data",
+      "label": "Text Color (HEX)",
+      "default": "#e5e7eb"
+    },
+    {
+      "fieldname": "muted_color",
+      "fieldtype": "Data",
+      "label": "Muted Color (HEX)",
+      "default": "#94a3b8"
+    },
+    {
+      "fieldname": "success_color",
+      "fieldtype": "Data",
+      "label": "Success Color (HEX)",
+      "default": "#16a34a"
+    },
+    {
+      "fieldname": "danger_color",
+      "fieldtype": "Data",
+      "label": "Danger Color (HEX)",
+      "default": "#dc2626"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC"
+}

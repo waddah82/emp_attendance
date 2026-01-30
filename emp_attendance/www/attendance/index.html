@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EMP Attendance</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="/attendance/manifest.webmanifest">
+  <meta name="theme-color" content="#4b6cb7">
+  <link rel="icon" href="/assets/emp_attendance/attendance/icon-192.png">
+  <link rel="apple-touch-icon" href="/assets/emp_attendance/attendance/icon-512.png">
+
+  <link rel="stylesheet" href="/assets/emp_attendance/attendance/style.css">
+
+  <!-- Leaflet (Map) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+</head>
+<body>
+  <!-- Top bar: Company icon (left) + Employee name (center) + User photo (right) -->
+  <header class="topbar">
+    <div class="top-left">
+      <img class="company-icon" id="companyIcon" src="/assets/emp_attendance/attendance/icon-192.png" alt="Company"/>
+    </div>
+    <div class="top-center" id="topTitle">EMP Attendance</div>
+    <div class="top-right">
+      <img class="user-avatar" id="userAvatar" alt="User" />
+      <div class="user-avatar-fallback hidden" id="userAvatarFallback">U</div>
+    </div>
+  </header>
+
+  <!-- Success Dialog -->
+  <div class="modal hidden" id="successModal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-icon" id="modalIcon">✅</div>
+      <div class="modal-title" id="modalTitle">تم بنجاح</div>
+      <div class="modal-msg" id="modalMsg">تم حفظ العملية بنجاح</div>
+      <button class="primary-btn" id="btnModalOk">OK</button>
+    </div>
+  </div>
+
+  <!-- LOGIN screen -->
+  <main class="screen" id="bootScreen">
+    <div class="card"><h2>Loading...</h2><div class="status">Checking session...</div></div>
+  </main>
+
+  <main class="screen hidden" id="loginScreen">
+    <div class="card">
+      <h2>Login</h2><label>Username <input id="username" type="text" placeholder="username" /></label>
+      <label>Password <input id="password" type="password" placeholder="••••••••" /></label>
+      <button class="primary-btn" id="btnLogin">Login</button>
+      <div class="status" id="loginStatus"></div>
+    </div>
+  </main>
+
+  <!-- ATTENDANCE screen -->
+  <main class="screen hidden" id="attendanceScreen">
+    <div class="card">
+      <h2>Attendance</h2>
+      <div class="big-actions">
+        <button class="primary-btn success" id="btnCheckin">✅ Check In</button>
+        <button class="primary-btn danger" id="btnCheckout">🚪 Check Out</button>
+      </div>
+      
+
+      <div class="map-wrap">
+        <div class="map-head">
+          <div class="map-title">الموقع على الخريطة</div>
+        </div>
+        <div id="map" class="map"></div>
+
+        <div class="map-controls">
+          <button class="btn btn-secondary btn-sm" id="btnCenterMap">📍 تمركز</button>
+          <button class="btn btn-secondary btn-sm" id="btnToggleSatellite">🛰️ Satellite</button>
+        </div>
+      </div>
+      <div class="mini">
+        <div><b>Lat</b>: <span id="lat">-</span></div>
+        <div><b>Lng</b>: <span id="lng">-</span></div>
+        <div><b>Acc</b>: <span id="acc">-</span> m</div>
+      </div>
+
+      <div class="status" id="appStatus"></div>
+      <button class="link-btn" id="btnLogout">Logout</button>
+    </div>
+  </main>
+
+  
+  <!-- Leaflet (Map) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="/assets/emp_attendance/attendance/app.js"></script>
+  <script>
+    // service worker for PWA scope
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => navigator.serviceWorker.register("/attendance/sw.js"));
+    }
+  </script>
+</body>
+</html>

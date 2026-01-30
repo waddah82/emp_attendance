@@ -1,0 +1,3 @@
+recursive-include emp_attendance *.json *.md *.py *.html *.js *.css *.png *.webmanifest
+recursive-include emp_attendance/public *
+recursive-include emp_attendance/www *

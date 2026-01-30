@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login to EMP Attendance</title>
+
+  <meta name="theme-color" content="#1f2a44" />
+  <link rel="manifest" href="/attendance/manifest.webmanifest">
+
+  <link rel="stylesheet" href="/assets/emp_attendance/attendance/style.css">
+  <style>
+    :root{ --card-border: rgba(59,130,246,.35); }
+    body{ background: var(--page-bg,#f5f7fa); }
+    .login-wrap{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+    .login-card{
+      width:min(540px,92vw);
+      background: var(--card-bg,#fff);
+      border:2px solid var(--card-border);
+      border-radius:18px;
+      padding:22px;
+      box-shadow:0 14px 40px rgba(0,0,0,.10);
+    }
+    .topbar-mini{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .left{display:flex;align-items:center;gap:10px}
+    .logo{width:46px;height:46px;border-radius:12px;object-fit:cover;background:#e5e7eb}
+    .company{font-weight:900;font-size:18px;color:var(--text,#111827)}
+    .badge{background:rgba(59,130,246,.12);color:var(--primary,#2563eb);padding:6px 10px;border-radius:999px;font-weight:800}
+    .title{font-size:22px;font-weight:900;text-align:center;margin:10px 0 18px;color:var(--text,#111827)}
+    .form-row{margin-bottom:14px}
+    label{display:block;margin-bottom:6px;font-weight:800;color:var(--muted,#334155)}
+    input{
+      width:100%;
+      padding:12px 12px;
+      border:1px solid rgba(148,163,184,.55);
+      border-radius:12px;
+      font-size:16px;
+      background:#fff;
+    }
+    input:focus{outline:none;border-color:var(--primary,#2563eb);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+    .btn-login{
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:12px;
+      background: #111827;
+      color:#fff;
+      font-weight:900;
+      font-size:16px;
+      cursor:pointer;
+    }
+    .btn-login:active{transform: translateY(1px);}
+    .status{margin-top:12px;text-align:center;font-weight:800;color:#dc2626;min-height:22px}
+    .hint{margin-top:10px;text-align:center;color:var(--muted,#64748b);font-size:13px}
+  </style>
+</head>
+
+<body>
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="topbar-mini">
+        <div class="left">
+          <img id="companyLogo" class="logo" alt="logo">
+          <div class="company" id="companyName">Company</div>
+        </div>
+        <div class="badge">EMP Attendance</div>
+      </div>
+
+      <div class="title">Login to EMP Attendance</div>
+
+      <div class="form-row">
+        <label for="usr">User ID</label>
+        <input id="usr" type="text" autocomplete="username" />
+      </div>
+
+      <div class="form-row">
+        <label for="pwd">Password</label>
+        <input id="pwd" type="password" autocomplete="current-password" />
+      </div>
+
+      <button class="btn-login" id="btnLogin">Login</button>
+      <div class="status" id="status"></div>
+      <div class="hint">If you log out, you will be returned to this page.</div>
+    </div>
+  </div>
+
+  <script>
+    window.__EMP_SETTINGS__ = {{ settings | tojson }};
+  </script>
+  <script src="/emp_attendance/account/login.js"></script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/attendance/sw.js').catch(()=>{});
+    }
+  </script>
+</body>
+</html>
