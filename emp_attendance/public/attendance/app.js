@@ -366,12 +366,12 @@ window.addEventListener("DOMContentLoaded", () => {
  
 
   $("btnModalOk").addEventListener("click", closeSuccess);
-  $("btnRecenter").addEventListener("click", async () => {
-    try{
-      const loc = await getLocation();
-      updateLocationUI(loc);
-    }catch(e){}
-  });
+//  $("btnRecenter").addEventListener("click", async () => {
+ //   try{
+ //     const loc = await getLocation();
+//      updateLocationUI(loc);
+//    }catch(e){}
+//  });
   $("successModal").addEventListener("click", (e) => {
     if (e.target && e.target.id === "successModal") closeSuccess();
   });
