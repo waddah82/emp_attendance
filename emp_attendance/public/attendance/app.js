@@ -160,17 +160,7 @@ function showError(message, data) {
     modalContent.innerHTML = message;
   } else {
 
-    modalContent.innerHTML = `
-      <div style="text-align: center; padding: 20px;">
-        <div style="font-size: 48px; color: #f44336; margin-bottom: 15px;">⚠️</div>
-        <h3 style="color: #f44336; margin-bottom: 15px;">Failed to Check-in</h3>
-        <div style="background: #ffebee; padding: 15px; border-radius: 8px;">
-          <p style="margin: 0; color: #c62828; font-size: 16px;">
-            ${message || 'An error occurred'}
-          </p>
-        </div>
-      </div>
-    `;
+   modalContent.textContent = message;
   }
   
 
