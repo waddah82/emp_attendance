@@ -43,13 +43,300 @@ async function post(method, payload) {
   });
 
   const data = await res.json().catch(() => ({}));
+  
   if (!res.ok) {
+  
     const err = (data && data.message) ? JSON.stringify(data.message) : "Network Error";
+    
+    showFrappeError(data);
     throw new Error(err);
   }
   return data;
 }
 
+
+
+async function postch(method, payload) {
+  const url = `/api/method/${method}`;
+  const headers = { 
+    "Content-Type": "application/json", 
+    "Accept": "application/json" 
+  };
+  
+  if (csrfToken) {
+    headers["X-Frappe-CSRF-Token"] = csrfToken;
+  }
+
+  const res = await fetch(url, {
+    method: "POST",
+    credentials: "include",
+    headers: headers,
+    body: JSON.stringify(payload || {})
+  });
+
+  const data = await res.json().catch(() => ({}));
+  
+  if (!res.ok) {
+    // استخراج رسالة الخطأ من Frappe
+    const errorMessage = extractFrappeMessage(data);
+    
+    // عرض الرسالة في واجهة المستخدم
+    showError(errorMessage, data);
+    
+    // تسجيل في الكونسول للتصحيح
+    console.error("API Error:", {
+      status: res.status,
+      url: url,
+      error: errorMessage,
+      data: data
+    });
+    
+    throw new Error(errorMessage);
+  }
+  
+  // إذا كان هناك رسالة نجاح من السيرفر
+  if (data._server_messages) {
+    const successMessage = extractFrappeMessage(data, true);
+    if (successMessage) {
+      showServerMessage(successMessage, data);
+    }
+  }
+  
+  return data;
+}
+
+// دالة لاستخراج الرسالة من Frappe
+function extractFrappeMessage(data, isSuccess = false) {
+  if (data._server_messages) {
+    try {
+      const messages = JSON.parse(data._server_messages);
+      if (Array.isArray(messages) && messages[0]) {
+        const msg = JSON.parse(messages[0]);
+        
+        // استخراج النص من HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = msg.message || '';
+        
+        // إما استخراج النص أو استخدام HTML
+        if (msg.message && msg.message.includes('<div')) {
+          return msg.message; // إرجاع HTML
+        }
+        return tempDiv.textContent || tempDiv.innerText || msg.message;
+      }
+    } catch (e) {
+      console.error("Failed to parse server message:", e);
+    }
+  }
+  
+  if (data.message) {
+    return data.message;
+  }
+  
+  return isSuccess ? "" : "An error occurred";
+}
+
+// دالة لعرض رسالة الخطأ
+function showError(message, data) {
+  const modal = $("errorModal");
+  const modalTitle = $("errorModalTitle");
+  const modalContent = $("errorModalMsg");
+  
+  if (!modal || !modalTitle || !modalContent) {
+    console.error("Error modal elements not found!");
+    
+
+    if (typeof message === 'string' && !message.includes('<div')) {
+      alert("Error: " + message);
+    }
+    return;
+  }
+  
+
+  modalTitle.textContent = "Check Failed";
+  
+
+  if (typeof message === 'string' && message.includes('<div')) {
+
+    modalContent.innerHTML = message;
+  } else {
+
+    modalContent.innerHTML = `
+      <div style="text-align: center; padding: 20px;">
+        <div style="font-size: 48px; color: #f44336; margin-bottom: 15px;">⚠️</div>
+        <h3 style="color: #f44336; margin-bottom: 15px;">Failed to Check-in</h3>
+        <div style="background: #ffebee; padding: 15px; border-radius: 8px;">
+          <p style="margin: 0; color: #c62828; font-size: 16px;">
+            ${message || 'An error occurred'}
+          </p>
+        </div>
+      </div>
+    `;
+  }
+  
+
+  modal.classList.remove("hidden");
+}
+
+
+function showServerMessage(message, data) {
+
+  const successModal = $("successModal");
+  if (successModal) {
+    successModal.classList.add("hidden");
+  }
+  
+
+  let serverModal = $("serverMessageModal");
+  
+
+  if (!serverModal) {
+    serverModal = document.createElement('div');
+    serverModal.id = "serverMessageModal";
+    serverModal.className = "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden";
+    serverModal.innerHTML = `
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+        <div class="p-6">
+          <div id="serverMessageTitle" class="text-xl font-semibold mb-4"></div>
+          <div id="serverMessageContent" class="mb-6"></div>
+          <div class="flex justify-end">
+            <button onclick="$('serverMessageModal').classList.add('hidden')" 
+                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+              OK
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(serverModal);
+  }
+  
+
+  const title = $("#serverMessageTitle");
+  const content = $("#serverMessageContent");
+  
+  if (title && content) {
+    title.textContent = "Check-in Status";
+    
+
+    if (typeof message === 'string' && message.includes('<div')) {
+      content.innerHTML = message;
+    } else {
+      content.innerHTML = `
+        <div style="text-align: center; padding: 10px;">
+          <div style="font-size: 40px; color: #4caf50; margin-bottom: 10px;">✅</div>
+          <p style="color: #666; font-size: 16px;">${message}</p>
+        </div>
+      `;
+    }
+    
+
+    serverModal.classList.remove("hidden");
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+function displayFrappeError(data, status) {
+  if (data._server_messages) {
+    try {
+      const messages = JSON.parse(data._server_messages);
+      if (Array.isArray(messages) && messages[0]) {
+        const msg = JSON.parse(messages[0]);
+        
+
+        const errorDiv = document.createElement('div');
+        errorDiv.innerHTML = msg.message;
+        const textContent = errorDiv.textContent || errorDiv.innerText;
+        
+
+        console.error(`%cFrappe Error (${status}): ${textContent}`, 
+          "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); " +
+          "color: white; padding: 15px; border-radius: 10px; " +
+          "font-size: 14px; font-weight: bold;");
+        
+        console.log("Full HTML message:", msg.message);
+      }
+    } catch (e) {
+      console.error("Raw server messages:", data._server_messages);
+    }
+  }
+}
+
+// دالة مساعدة لاستخراج النص من الرسالة
+function extractErrorMessage(data) {
+  if (data._server_messages) {
+    try {
+      const messages = JSON.parse(data._server_messages);
+      if (Array.isArray(messages) && messages[0]) {
+        const msg = JSON.parse(messages[0]);
+        if (msg.message) {
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = msg.message;
+          return tempDiv.textContent || tempDiv.innerText || msg.message;
+        }
+      }
+    } catch (e) {
+      return data._server_messages || "Unknown error";
+    }
+  }
+  return data.message || `HTTP Error ${data.status}`;
+}
+function showFrappeError(data) {
+  if (data._server_messages) {
+    try {
+      const messages = JSON.parse(data._server_messages);
+      if (Array.isArray(messages) && messages[0]) {
+        const msg = JSON.parse(messages[0]);
+        
+        // إنشاء نافذة عائمة لعرض HTML
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0,0,0,0.5);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 9999;
+        `;
+        
+        const content = document.createElement('div');
+        content.style.cssText = `
+          background: white;
+          padding: 20px;
+          border-radius: 10px;
+          max-width: 500px;
+          max-height: 80vh;
+          overflow-y: auto;
+        `;
+        content.innerHTML = msg.message;
+        
+        modal.appendChild(content);
+        document.body.appendChild(modal);
+        
+        // إغلاق النافذة عند النقر خارجها
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            document.body.removeChild(modal);
+          }
+        });
+      }
+    } catch (e) {
+      console.error("Failed to display error:", e);
+    }
+  }
+}
 // UI Helpers
 function setStatus(el, msg){ el.textContent = msg || ""; }
 function show(id){
@@ -218,7 +505,7 @@ async function doCheck(kind){
 
     setStatus(status, "Saving...");
     const method = kind === "IN" ? "emp_attendance.api.checkin" : "emp_attendance.api.checkout";
-    await post(method, { location: loc });
+    await postch(method, { location: loc });
     
     setStatus(status, "");
     showSuccess(kind);
@@ -254,12 +541,12 @@ function setTileLayerSatellite(enable){
     // Esri World Imagery
     tileLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
       maxZoom: 19,
-      attribution: "© Esri"
+      attribution: "آ© Esri"
     }).addTo(map);
   } else {
     tileLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
-      attribution: "© OpenStreetMap contributors"
+      attribution: "آ© OpenStreetMap contributors"
     }).addTo(map);
   }
 }
@@ -309,7 +596,9 @@ function showSuccess(kind){
 function closeSuccess(){
   $("successModal").classList.add("hidden");
 }
-
+function closeerror(){
+  $("errorModal").classList.add("hidden");
+}
 async function cacheGetSession(){
   try{
     const cache = await caches.open(AUTH_CACHE);
@@ -365,10 +654,12 @@ window.addEventListener("DOMContentLoaded", () => {
   });
  
 
+
   $("btnModalOk").addEventListener("click", closeSuccess);
-//  $("btnRecenter").addEventListener("click", async () => {
- //   try{
- //     const loc = await getLocation();
+  $("errorModalOk").addEventListener("click", closeerror);
+  //$("btnRecenter").addEventListener("click", async () => {
+//    try{
+//      const loc = await getLocation();
 //      updateLocationUI(loc);
 //    }catch(e){}
 //  });
