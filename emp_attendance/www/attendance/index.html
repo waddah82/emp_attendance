@@ -41,6 +41,15 @@
       <button class="primary-btn" id="btnModalOk">OK</button>
     </div>
   </div>
+  <div class="modal hidden" id="errorModal" role="dialog" aria-modal="true">
+      <div class="modal-card">
+          <div class="modal-icon" id="errorModalIcon">⚠️</div>
+          <div class="modal-title" id="errorModalTitle">خطأ</div>
+          <div class="modal-msg" id="errorModalMsg"></div>
+          <button class="primary-btn" id="errorModalOk">OK</button>
+      </div>
+  </div>
+
 
   <!-- LOGIN screen -->
   <main class="screen" id="bootScreen">
@@ -82,7 +91,8 @@
         <div><b>Lng</b>: <span id="lng">-</span></div>
         <div><b>Acc</b>: <span id="acc">-</span> m</div>
       </div>
-<div class="status" id="appStatus"></div>
+
+      <div class="status" id="appStatus"></div>
       <button class="link-btn" id="btnLogout">Logout</button>
     </div>
   </main>
